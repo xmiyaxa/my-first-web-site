@@ -240,6 +240,165 @@
       text-transform: uppercase;
     }
 
+    .game-section {
+      display: grid;
+      grid-template-columns: 0.78fr 1.22fr;
+      gap: 32px;
+      align-items: stretch;
+      margin-top: 64px;
+      padding: 32px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(35, 213, 232, 0.12), transparent 36%),
+        linear-gradient(315deg, rgba(255, 61, 87, 0.12), transparent 42%),
+        rgba(255, 255, 255, 0.055);
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.24);
+      animation: slide-up 700ms ease 1.05s both;
+    }
+
+    .game-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      justify-content: space-between;
+      min-width: 0;
+    }
+
+    .game-copy p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .game-stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .stat {
+      min-height: 84px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(8, 10, 15, 0.58);
+    }
+
+    .stat-label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      display: block;
+      margin-top: 8px;
+      color: var(--ink);
+      font-size: 2rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .game-board {
+      position: relative;
+      min-height: 360px;
+      border: 1px solid rgba(35, 213, 232, 0.3);
+      border-radius: 8px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at center, rgba(35, 213, 232, 0.16), transparent 42%),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 42px),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 42px),
+        rgba(5, 8, 14, 0.88);
+      cursor: crosshair;
+      isolation: isolate;
+      touch-action: manipulation;
+    }
+
+    .game-board::before {
+      position: absolute;
+      inset: 14px;
+      content: "";
+      border: 1px solid rgba(244, 247, 251, 0.1);
+      pointer-events: none;
+    }
+
+    .target {
+      position: absolute;
+      width: var(--target-size, 58px);
+      height: var(--target-size, 58px);
+      border: 0;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, #ffffff 0 10%, var(--gold) 11% 27%, var(--red) 28% 46%, rgba(255, 61, 87, 0.18) 47% 70%, transparent 71%);
+      box-shadow:
+        0 0 26px rgba(255, 61, 87, 0.8),
+        0 0 54px rgba(35, 213, 232, 0.38);
+      cursor: pointer;
+      transform: translate(-50%, -50%) scale(1);
+      animation: target-pop 520ms ease both, target-pulse 920ms ease-in-out infinite;
+    }
+
+    .target:focus-visible {
+      outline: 3px solid var(--cyan);
+      outline-offset: 4px;
+    }
+
+    .burst {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--cyan);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      animation: burst-out 460ms ease-out forwards;
+    }
+
+    .game-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .game-button {
+      min-height: 44px;
+      padding: 0 18px;
+      border: 1px solid rgba(35, 213, 232, 0.72);
+      border-radius: 8px;
+      color: var(--ink);
+      background: rgba(35, 213, 232, 0.13);
+      font: inherit;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 160ms ease, transform 160ms ease, border-color 160ms ease;
+    }
+
+    .game-button:hover {
+      border-color: var(--gold);
+      background: rgba(244, 201, 93, 0.16);
+      transform: translateY(-2px);
+    }
+
+    .game-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+      transform: none;
+    }
+
+    .game-message {
+      min-height: 1.5em;
+      color: var(--gold);
+      font-weight: 800;
+    }
+
     footer {
       display: flex;
       justify-content: space-between;
@@ -365,6 +524,41 @@
       }
     }
 
+    @keyframes target-pop {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.42);
+      }
+
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    @keyframes target-pulse {
+      0%,
+      100% {
+        filter: brightness(1);
+      }
+
+      50% {
+        filter: brightness(1.35);
+      }
+    }
+
+    @keyframes burst-out {
+      from {
+        opacity: 0.9;
+        transform: translate(-50%, -50%) scale(0.6);
+      }
+
+      to {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(5);
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *,
       *::before,
@@ -411,6 +605,15 @@
         min-height: 116px;
       }
 
+      .game-section {
+        grid-template-columns: 1fr;
+        padding: 22px;
+      }
+
+      .game-board {
+        min-height: 300px;
+      }
+
       footer {
         flex-direction: column;
       }
@@ -454,10 +657,140 @@
       </ul>
     </section>
 
+    <section class="game-section" aria-labelledby="game-title">
+      <div class="game-copy">
+        <div>
+          <p class="eyebrow">Mini Game</p>
+          <h2 id="game-title">Reflex Debate</h2>
+          <p>光ったポイントをすばやくクリックしてスコアを伸ばすゲームです。30秒でどこまで反応できるか挑戦できます。</p>
+        </div>
+
+        <div class="game-stats" aria-live="polite">
+          <div class="stat">
+            <span class="stat-label">Score</span>
+            <span class="stat-value" id="score">0</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Time</span>
+            <span class="stat-value" id="time">30</span>
+          </div>
+        </div>
+
+        <div class="game-actions">
+          <button class="game-button" id="start-game" type="button">Start</button>
+          <span class="game-message" id="game-message">Startを押して開始</span>
+        </div>
+      </div>
+
+      <div class="game-board" id="game-board" role="application" aria-label="反射神経ゲームエリア"></div>
+    </section>
+
     <footer>
       <span>ディベートやりましょう。</span>
       <span>Built for GitHub Pages.</span>
     </footer>
   </main>
+
+  <script>
+    const board = document.querySelector("#game-board");
+    const startButton = document.querySelector("#start-game");
+    const scoreValue = document.querySelector("#score");
+    const timeValue = document.querySelector("#time");
+    const message = document.querySelector("#game-message");
+
+    let score = 0;
+    let timeLeft = 30;
+    let activeTarget = null;
+    let gameTimer = null;
+    let targetTimer = null;
+    let playing = false;
+
+    function randomBetween(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function clearTarget() {
+      if (activeTarget) {
+        activeTarget.remove();
+        activeTarget = null;
+      }
+    }
+
+    function showBurst(x, y) {
+      const burst = document.createElement("span");
+      burst.className = "burst";
+      burst.style.left = `${x}px`;
+      burst.style.top = `${y}px`;
+      board.appendChild(burst);
+      burst.addEventListener("animationend", () => burst.remove(), { once: true });
+    }
+
+    function placeTarget() {
+      clearTarget();
+
+      const boardRect = board.getBoundingClientRect();
+      const size = randomBetween(42, 64);
+      const x = randomBetween(size, Math.max(size, boardRect.width - size));
+      const y = randomBetween(size, Math.max(size, boardRect.height - size));
+
+      const target = document.createElement("button");
+      target.className = "target";
+      target.type = "button";
+      target.setAttribute("aria-label", "ターゲット");
+      target.style.setProperty("--target-size", `${size}px`);
+      target.style.left = `${x}px`;
+      target.style.top = `${y}px`;
+
+      target.addEventListener("click", () => {
+        if (!playing) {
+          return;
+        }
+
+        score += 1;
+        scoreValue.textContent = score;
+        message.textContent = score % 5 === 0 ? "Nice streak!" : "Hit!";
+        showBurst(x, y);
+        placeTarget();
+      });
+
+      board.appendChild(target);
+      activeTarget = target;
+      window.clearTimeout(targetTimer);
+      targetTimer = window.setTimeout(placeTarget, Math.max(520, 1150 - score * 18));
+    }
+
+    function endGame() {
+      playing = false;
+      startButton.disabled = false;
+      startButton.textContent = "Restart";
+      message.textContent = `終了: ${score}点`;
+      clearTarget();
+      window.clearInterval(gameTimer);
+      window.clearTimeout(targetTimer);
+    }
+
+    function startGame() {
+      score = 0;
+      timeLeft = 30;
+      playing = true;
+      scoreValue.textContent = score;
+      timeValue.textContent = timeLeft;
+      message.textContent = "ターゲットをクリック";
+      startButton.disabled = true;
+
+      placeTarget();
+
+      gameTimer = window.setInterval(() => {
+        timeLeft -= 1;
+        timeValue.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+    }
+
+    startButton.addEventListener("click", startGame);
+  </script>
 </body>
 </html>
