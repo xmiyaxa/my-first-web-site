@@ -3,103 +3,277 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>あの自己紹介ページ</title>
+  <title>自己紹介 | Debate, Speech, Discussion</title>
   <style>
     * {
       box-sizing: border-box;
     }
 
+    :root {
+      --bg: #080a0f;
+      --ink: #f4f7fb;
+      --muted: #aeb8c8;
+      --line: rgba(244, 247, 251, 0.16);
+      --panel: rgba(255, 255, 255, 0.07);
+      --cyan: #23d5e8;
+      --red: #ff3d57;
+      --gold: #f4c95d;
+    }
+
     body {
       margin: 0;
-      font-family: Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       line-height: 1.6;
-      color: #1f2933;
-      background: #f4f6f8;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(35, 213, 232, 0.22), transparent 28rem),
+        linear-gradient(135deg, rgba(255, 61, 87, 0.16), transparent 30%),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 96px),
+        var(--bg);
     }
 
     main {
-      max-width: 880px;
+      width: min(1080px, calc(100% - 40px));
       margin: 0 auto;
-      padding: 64px 24px;
+      padding: 36px 0;
     }
 
     .hero {
-      padding: 48px 0 40px;
-      border-bottom: 1px solid #d9e2ec;
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+      gap: 40px;
+      align-items: center;
+      min-height: 72vh;
+      padding: 56px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 20px;
+      color: var(--cyan);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      width: 42px;
+      height: 2px;
+      content: "";
+      background: var(--red);
     }
 
     h1 {
-      margin: 0 0 16px;
-      font-size: 2.8rem;
-      line-height: 1.2;
-    }
-
-    h2 {
-      margin: 0 0 16px;
-      font-size: 1.5rem;
-    }
-
-    p {
       margin: 0;
-      font-size: 1.1rem;
+      font-size: clamp(4rem, 12vw, 8.5rem);
+      line-height: 0.9;
+      letter-spacing: 0;
+      text-transform: uppercase;
+      text-shadow: 0 0 32px rgba(35, 213, 232, 0.18);
     }
 
     .lead {
-      max-width: 640px;
-      color: #52606d;
-      font-size: 1.2rem;
+      max-width: 700px;
+      margin: 28px 0 0;
+      color: var(--muted);
+      font-size: clamp(1.15rem, 2vw, 1.45rem);
     }
 
-    section {
-      padding: 32px 0;
+    .visual {
+      position: relative;
+      min-height: 430px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background:
+        linear-gradient(145deg, rgba(35, 213, 232, 0.2), transparent 42%),
+        linear-gradient(315deg, rgba(255, 61, 87, 0.22), transparent 38%),
+        #10131b;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.42);
+      isolation: isolate;
     }
 
-    ul {
+    .visual::before,
+    .visual::after {
+      position: absolute;
+      content: "";
+      inset: 42px;
+      border: 1px solid rgba(244, 247, 251, 0.16);
+      transform: skewY(-10deg);
+    }
+
+    .visual::after {
+      inset: 86px 26px 76px 74px;
+      border-color: rgba(35, 213, 232, 0.5);
+      transform: skewY(-10deg) translateX(22px);
+      box-shadow: -18px 18px 0 rgba(255, 61, 87, 0.32);
+    }
+
+    .statement {
+      position: absolute;
+      right: 24px;
+      bottom: 24px;
+      left: 24px;
+      z-index: 1;
+    }
+
+    .statement p {
+      margin: 0;
+      font-size: clamp(1.45rem, 3vw, 2.2rem);
+      font-weight: 800;
+      line-height: 1.08;
+      text-transform: uppercase;
+    }
+
+    .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 40px;
+      padding: 56px 0 0;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      line-height: 1.05;
+      text-transform: uppercase;
+    }
+
+    .skills {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 12px;
       margin: 0;
       padding: 0;
       list-style: none;
     }
 
-    li {
-      padding: 16px;
-      border: 1px solid #d9e2ec;
+    .skills li {
+      min-height: 150px;
+      padding: 20px;
+      border: 1px solid var(--line);
       border-radius: 8px;
-      background: #ffffff;
-      font-weight: bold;
+      background: var(--panel);
+      backdrop-filter: blur(16px);
+      transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
     }
 
-    .message {
-      padding: 24px;
-      border-left: 4px solid #2f80ed;
-      background: #ffffff;
+    .skills li:hover {
+      border-color: rgba(35, 213, 232, 0.72);
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-4px);
+    }
+
+    .number {
+      display: block;
+      margin: 0 0 34px;
+      color: var(--gold);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .skill-title {
+      display: block;
       font-size: 1.25rem;
-      font-weight: bold;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      margin-top: 56px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 760px) {
+      main {
+        width: min(100% - 28px, 1080px);
+        padding: 24px 0 36px;
+      }
+
+      .hero,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        min-height: auto;
+        gap: 28px;
+        padding: 48px 0 36px;
+      }
+
+      .statement {
+        right: 18px;
+        bottom: 18px;
+        left: 18px;
+      }
+
+      .visual {
+        min-height: 320px;
+      }
+
+      .skills {
+        grid-template-columns: 1fr;
+      }
+
+      .skills li {
+        min-height: 116px;
+      }
+
+      footer {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
   <main>
     <header class="hero">
-      <h1>あ</h1>
-      <p class="lead">大学生です。ディベート、スピーチ、ディスカッションに関心があります。</p>
+      <div>
+        <p class="eyebrow">Student / Speaker / Debater</p>
+        <h1>About Me</h1>
+        <p class="lead">大学生です。ディベート、スピーチ、ディスカッションに関心があります。考えを磨き、言葉で伝え、対話で前に進めることが好きです。</p>
+      </div>
+
+      <aside class="visual" aria-label="抽象的なディベートのビジュアル">
+        <div class="statement">
+          <p>Debate. Speech. Discussion.</p>
+        </div>
+      </aside>
     </header>
 
-    <section>
-      <h2>好きなこと・得意なこと</h2>
-      <ul>
-        <li>ディベート</li>
-        <li>スピーチ</li>
-        <li>ディスカッション</li>
+    <section class="grid">
+      <h2>好きなこと</h2>
+      <ul class="skills" aria-label="好きなこと">
+        <li>
+          <span class="number">01</span>
+          <span class="skill-title">ディベート</span>
+        </li>
+        <li>
+          <span class="number">02</span>
+          <span class="skill-title">スピーチ</span>
+        </li>
+        <li>
+          <span class="number">03</span>
+          <span class="skill-title">ディスカッション</span>
+        </li>
       </ul>
     </section>
 
-    <section>
-      <h2>メッセージ</h2>
-      <p class="message">ディベートやりましょう！</p>
-    </section>
+    <footer>
+      <span>ディベートやりましょう。</span>
+      <span>Built for GitHub Pages.</span>
+    </footer>
   </main>
 </body>
 </html>
