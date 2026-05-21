@@ -305,7 +305,10 @@
 
     .game-board {
       position: relative;
+      display: grid;
+      place-items: center;
       min-height: 360px;
+      padding: 28px;
       border: 1px solid rgba(35, 213, 232, 0.3);
       border-radius: 8px;
       overflow: hidden;
@@ -314,9 +317,7 @@
         repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 42px),
         repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 42px),
         rgba(5, 8, 14, 0.88);
-      cursor: crosshair;
       isolation: isolate;
-      touch-action: manipulation;
     }
 
     .game-board::before {
@@ -327,36 +328,68 @@
       pointer-events: none;
     }
 
-    .target {
-      position: absolute;
-      width: var(--target-size, 58px);
-      height: var(--target-size, 58px);
-      border: 0;
-      border-radius: 50%;
+    .typing-panel {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      width: min(100%, 560px);
+      gap: 18px;
+      text-align: center;
+    }
+
+    .typing-word {
+      min-height: 1.2em;
+      color: var(--ink);
+      font-size: clamp(2.3rem, 7vw, 5rem);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: 0;
+      text-shadow:
+        0 0 24px rgba(35, 213, 232, 0.38),
+        0 0 50px rgba(255, 61, 87, 0.22);
+      text-transform: uppercase;
+      animation: word-pop 520ms ease both;
+    }
+
+    .typing-word.is-correct {
+      color: var(--gold);
+      animation: word-hit 320ms ease both;
+    }
+
+    .typing-input {
+      width: 100%;
+      min-height: 54px;
+      padding: 0 18px;
+      border: 1px solid rgba(35, 213, 232, 0.45);
+      border-radius: 8px;
+      color: var(--ink);
       background:
-        radial-gradient(circle, #ffffff 0 10%, var(--gold) 11% 27%, var(--red) 28% 46%, rgba(255, 61, 87, 0.18) 47% 70%, transparent 71%);
-      box-shadow:
-        0 0 26px rgba(255, 61, 87, 0.8),
-        0 0 54px rgba(35, 213, 232, 0.38);
-      cursor: pointer;
-      transform: translate(-50%, -50%) scale(1);
-      animation: target-pop 520ms ease both, target-pulse 920ms ease-in-out infinite;
+        linear-gradient(90deg, rgba(35, 213, 232, 0.08), rgba(255, 61, 87, 0.08)),
+        rgba(8, 10, 15, 0.86);
+      font: inherit;
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-align: center;
+      outline: none;
+      transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
     }
 
-    .target:focus-visible {
-      outline: 3px solid var(--cyan);
-      outline-offset: 4px;
+    .typing-input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 4px rgba(244, 201, 93, 0.12), 0 0 34px rgba(35, 213, 232, 0.18);
+      transform: translateY(-2px);
     }
 
-    .burst {
-      position: absolute;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      border: 2px solid var(--cyan);
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-      animation: burst-out 460ms ease-out forwards;
+    .typing-input:disabled {
+      cursor: not-allowed;
+      opacity: 0.58;
+    }
+
+    .typing-hint {
+      min-height: 1.5em;
+      margin: 0;
+      color: var(--muted);
+      font-weight: 800;
     }
 
     .game-actions {
@@ -524,38 +557,25 @@
       }
     }
 
-    @keyframes target-pop {
+    @keyframes word-pop {
       from {
         opacity: 0;
-        transform: translate(-50%, -50%) scale(0.42);
+        transform: translateY(18px) scale(0.92);
       }
 
       to {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
+        transform: translateY(0) scale(1);
       }
     }
 
-    @keyframes target-pulse {
-      0%,
-      100% {
-        filter: brightness(1);
-      }
-
-      50% {
-        filter: brightness(1.35);
-      }
-    }
-
-    @keyframes burst-out {
+    @keyframes word-hit {
       from {
-        opacity: 0.9;
-        transform: translate(-50%, -50%) scale(0.6);
+        transform: scale(1);
       }
 
       to {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(5);
+        transform: scale(1.08);
       }
     }
 
@@ -661,8 +681,8 @@
       <div class="game-copy">
         <div>
           <p class="eyebrow">Mini Game</p>
-          <h2 id="game-title">Reflex Debate</h2>
-          <p>光ったポイントをすばやくクリックしてスコアを伸ばすゲームです。30秒でどこまで反応できるか挑戦できます。</p>
+          <h2 id="game-title">Typing Debate</h2>
+          <p>表示された英単語をすばやく入力してスコアを伸ばすゲームです。30秒でどこまで正確に打てるか挑戦できます。</p>
         </div>
 
         <div class="game-stats" aria-live="polite">
@@ -682,7 +702,13 @@
         </div>
       </div>
 
-      <div class="game-board" id="game-board" role="application" aria-label="反射神経ゲームエリア"></div>
+      <div class="game-board" id="game-board" role="application" aria-label="タイピングゲームエリア">
+        <div class="typing-panel">
+          <div class="typing-word" id="typing-word">Ready?</div>
+          <input class="typing-input" id="typing-input" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" disabled>
+          <p class="typing-hint" id="typing-hint">Startを押してから、表示された単語を入力</p>
+        </div>
+      </div>
     </section>
 
     <footer>
@@ -692,71 +718,56 @@
   </main>
 
   <script>
-    const board = document.querySelector("#game-board");
     const startButton = document.querySelector("#start-game");
     const scoreValue = document.querySelector("#score");
     const timeValue = document.querySelector("#time");
     const message = document.querySelector("#game-message");
+    const wordValue = document.querySelector("#typing-word");
+    const typingInput = document.querySelector("#typing-input");
+    const typingHint = document.querySelector("#typing-hint");
+
+    const words = [
+      "debate",
+      "speech",
+      "logic",
+      "reason",
+      "claim",
+      "evidence",
+      "rebuttal",
+      "clarity",
+      "dialogue",
+      "argument",
+      "question",
+      "thinking"
+    ];
 
     let score = 0;
     let timeLeft = 30;
-    let activeTarget = null;
+    let currentWord = "";
     let gameTimer = null;
-    let targetTimer = null;
+    let wordTimer = null;
     let playing = false;
 
-    function randomBetween(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
+    function pickWord() {
+      const nextWords = words.filter((word) => word !== currentWord);
+      currentWord = nextWords[Math.floor(Math.random() * nextWords.length)];
+      wordValue.textContent = currentWord;
+      wordValue.classList.remove("is-correct");
+      typingInput.value = "";
     }
 
-    function clearTarget() {
-      if (activeTarget) {
-        activeTarget.remove();
-        activeTarget = null;
-      }
-    }
-
-    function showBurst(x, y) {
-      const burst = document.createElement("span");
-      burst.className = "burst";
-      burst.style.left = `${x}px`;
-      burst.style.top = `${y}px`;
-      board.appendChild(burst);
-      burst.addEventListener("animationend", () => burst.remove(), { once: true });
-    }
-
-    function placeTarget() {
-      clearTarget();
-
-      const boardRect = board.getBoundingClientRect();
-      const size = randomBetween(42, 64);
-      const x = randomBetween(size, Math.max(size, boardRect.width - size));
-      const y = randomBetween(size, Math.max(size, boardRect.height - size));
-
-      const target = document.createElement("button");
-      target.className = "target";
-      target.type = "button";
-      target.setAttribute("aria-label", "ターゲット");
-      target.style.setProperty("--target-size", `${size}px`);
-      target.style.left = `${x}px`;
-      target.style.top = `${y}px`;
-
-      target.addEventListener("click", () => {
-        if (!playing) {
-          return;
+    function markCorrect() {
+      score += 1;
+      scoreValue.textContent = score;
+      message.textContent = score % 5 === 0 ? "Nice typing!" : "Correct!";
+      typingHint.textContent = "その調子";
+      wordValue.classList.add("is-correct");
+      window.clearTimeout(wordTimer);
+      wordTimer = window.setTimeout(() => {
+        if (playing) {
+          pickWord();
         }
-
-        score += 1;
-        scoreValue.textContent = score;
-        message.textContent = score % 5 === 0 ? "Nice streak!" : "Hit!";
-        showBurst(x, y);
-        placeTarget();
-      });
-
-      board.appendChild(target);
-      activeTarget = target;
-      window.clearTimeout(targetTimer);
-      targetTimer = window.setTimeout(placeTarget, Math.max(520, 1150 - score * 18));
+      }, 180);
     }
 
     function endGame() {
@@ -764,9 +775,11 @@
       startButton.disabled = false;
       startButton.textContent = "Restart";
       message.textContent = `終了: ${score}点`;
-      clearTarget();
+      typingHint.textContent = "もう一度挑戦できます";
+      typingInput.disabled = true;
+      wordValue.textContent = "Finish";
       window.clearInterval(gameTimer);
-      window.clearTimeout(targetTimer);
+      window.clearTimeout(wordTimer);
     }
 
     function startGame() {
@@ -775,10 +788,13 @@
       playing = true;
       scoreValue.textContent = score;
       timeValue.textContent = timeLeft;
-      message.textContent = "ターゲットをクリック";
+      message.textContent = "単語を入力";
+      typingHint.textContent = "入力すると自動で判定されます";
       startButton.disabled = true;
+      typingInput.disabled = false;
 
-      placeTarget();
+      pickWord();
+      typingInput.focus();
 
       gameTimer = window.setInterval(() => {
         timeLeft -= 1;
@@ -791,6 +807,17 @@
     }
 
     startButton.addEventListener("click", startGame);
+    typingInput.addEventListener("input", () => {
+      if (!playing) {
+        return;
+      }
+
+      const typed = typingInput.value.trim().toLowerCase();
+
+      if (typed === currentWord) {
+        markCorrect();
+      }
+    });
   </script>
 </body>
 </html>
