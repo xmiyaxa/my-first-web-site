@@ -340,14 +340,13 @@
     .typing-word {
       min-height: 1.2em;
       color: var(--ink);
-      font-size: clamp(2.3rem, 7vw, 5rem);
+      font-size: clamp(1.45rem, 4vw, 2.8rem);
       font-weight: 900;
-      line-height: 1;
+      line-height: 1.25;
       letter-spacing: 0;
       text-shadow:
         0 0 24px rgba(35, 213, 232, 0.38),
         0 0 50px rgba(255, 61, 87, 0.22);
-      text-transform: uppercase;
       animation: word-pop 520ms ease both;
     }
 
@@ -369,7 +368,7 @@
       font: inherit;
       font-size: 1.1rem;
       font-weight: 800;
-      text-align: center;
+      text-align: left;
       outline: none;
       transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
     }
@@ -682,7 +681,7 @@
         <div>
           <p class="eyebrow">Mini Game</p>
           <h2 id="game-title">Typing Debate</h2>
-          <p>表示された英単語をすばやく入力してスコアを伸ばすゲームです。30秒でどこまで正確に打てるか挑戦できます。</p>
+          <p>表示された日本語の論理的な文章をすばやく入力してスコアを伸ばすゲームです。30秒でどこまで正確に打てるか挑戦できます。</p>
         </div>
 
         <div class="game-stats" aria-live="polite">
@@ -706,7 +705,7 @@
         <div class="typing-panel">
           <div class="typing-word" id="typing-word">Ready?</div>
           <input class="typing-input" id="typing-input" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" disabled>
-          <p class="typing-hint" id="typing-hint">Startを押してから、表示された単語を入力</p>
+          <p class="typing-hint" id="typing-hint">Startを押してから、表示された文章を入力</p>
         </div>
       </div>
     </section>
@@ -726,34 +725,40 @@
     const typingInput = document.querySelector("#typing-input");
     const typingHint = document.querySelector("#typing-hint");
 
-    const words = [
-      "debate",
-      "speech",
-      "logic",
-      "reason",
-      "claim",
-      "evidence",
-      "rebuttal",
-      "clarity",
-      "dialogue",
-      "argument",
-      "question",
-      "thinking"
+    const prompts = [
+      "根拠が不十分なら、その主張は採用できない。",
+      "反例が一つでもあれば、結論は修正されるべきだ。",
+      "原因と相関を混同すると、議論の精度が下がる。",
+      "前提が正しい場合に限り、結論は説得力を持つ。",
+      "相手の主張を正確に理解してから反論するべきだ。",
+      "政策の効果は、利益と副作用の両面から検討する。",
+      "感情に訴えるだけでは、論証としては弱い。",
+      "定義を共有しなければ、議論はすれ違いやすい。",
+      "例外を説明できる仮説ほど、強い説明力を持つ。",
+      "結論を急がず、証拠の質を先に確認する。"
     ];
 
     let score = 0;
     let timeLeft = 30;
-    let currentWord = "";
+    let currentPrompt = "";
     let gameTimer = null;
     let wordTimer = null;
     let playing = false;
 
-    function pickWord() {
-      const nextWords = words.filter((word) => word !== currentWord);
-      currentWord = nextWords[Math.floor(Math.random() * nextWords.length)];
-      wordValue.textContent = currentWord;
+    function pickPrompt() {
+      const nextPrompts = prompts.filter((prompt) => prompt !== currentPrompt);
+      currentPrompt = nextPrompts[Math.floor(Math.random() * nextPrompts.length)];
+      wordValue.textContent = currentPrompt;
       wordValue.classList.remove("is-correct");
       typingInput.value = "";
+    }
+
+    function normalizeText(value) {
+      return value
+        .trim()
+        .replace(/\s+/g, "")
+        .replace(/[、，]/g, "")
+        .replace(/[。．]/g, "");
     }
 
     function markCorrect() {
@@ -765,7 +770,7 @@
       window.clearTimeout(wordTimer);
       wordTimer = window.setTimeout(() => {
         if (playing) {
-          pickWord();
+          pickPrompt();
         }
       }, 180);
     }
@@ -788,12 +793,12 @@
       playing = true;
       scoreValue.textContent = score;
       timeValue.textContent = timeLeft;
-      message.textContent = "単語を入力";
+      message.textContent = "文章を入力";
       typingHint.textContent = "入力すると自動で判定されます";
       startButton.disabled = true;
       typingInput.disabled = false;
 
-      pickWord();
+      pickPrompt();
       typingInput.focus();
 
       gameTimer = window.setInterval(() => {
@@ -812,9 +817,9 @@
         return;
       }
 
-      const typed = typingInput.value.trim().toLowerCase();
+      const typed = normalizeText(typingInput.value);
 
-      if (typed === currentWord) {
+      if (typed === normalizeText(currentPrompt)) {
         markCorrect();
       }
     });
