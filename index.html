@@ -681,7 +681,7 @@
         <div>
           <p class="eyebrow">Mini Game</p>
           <h2 id="game-title">Typing Debate</h2>
-          <p>表示された日本語の論理的な文章をすばやく入力してスコアを伸ばすゲームです。2分で何文字入力できるか挑戦できます。</p>
+          <p>表示された日本語の論理的な文章をすばやく入力してスコアを伸ばすゲームです。80秒で何文字入力できるか挑戦できます。</p>
         </div>
 
         <div class="game-stats" aria-live="polite">
@@ -691,7 +691,7 @@
           </div>
           <div class="stat">
             <span class="stat-label">Time</span>
-            <span class="stat-value" id="time">120</span>
+            <span class="stat-value" id="time">80</span>
           </div>
         </div>
 
@@ -754,7 +754,7 @@
     ];
 
     let score = 0;
-    let timeLeft = 120;
+    let timeLeft = 80;
     let currentPrompt = "";
     let gameTimer = null;
     let wordTimer = null;
@@ -776,12 +776,32 @@
         .replace(/[。．]/g, "");
     }
 
-    function markCorrect() {
-      score += normalizeText(currentPrompt).length;
+    function countWrongCharacters(typed, expected) {
+      const maxLength = Math.max(typed.length, expected.length);
+      let wrongCount = 0;
+
+      for (let index = 0; index < maxLength; index += 1) {
+        if (typed[index] !== expected[index]) {
+          wrongCount += 1;
+        }
+      }
+
+      return wrongCount;
+    }
+
+    function submitAnswer() {
+      const typed = normalizeText(typingInput.value);
+      const expected = normalizeText(currentPrompt);
+      const wrongCount = countWrongCharacters(typed, expected);
+      const earnedCharacters = typed.length - wrongCount;
+
+      score += earnedCharacters;
       scoreValue.textContent = score;
-      message.textContent = `${normalizeText(currentPrompt).length}文字クリア`;
-      typingHint.textContent = "その調子";
-      wordValue.classList.add("is-correct");
+      message.textContent = wrongCount === 0
+        ? `${earnedCharacters}文字クリア`
+        : `${typed.length}文字入力 / ${wrongCount}文字減点`;
+      typingHint.textContent = wrongCount === 0 ? "その調子" : "次の問題へ進みます";
+      wordValue.classList.toggle("is-correct", wrongCount === 0);
       window.clearTimeout(wordTimer);
       wordTimer = window.setTimeout(() => {
         if (playing) {
@@ -804,7 +824,7 @@
 
     function startGame() {
       score = 0;
-      timeLeft = 120;
+      timeLeft = 80;
       playing = true;
       scoreValue.textContent = score;
       timeValue.textContent = timeLeft;
@@ -838,14 +858,7 @@
         return;
       }
 
-      const typed = normalizeText(typingInput.value);
-
-      if (typed === normalizeText(currentPrompt)) {
-        markCorrect();
-      } else {
-        message.textContent = "もう一度確認";
-        typingHint.textContent = "文章を入力し直してEnter";
-      }
+      submitAnswer();
     });
   </script>
 </body>
