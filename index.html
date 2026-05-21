@@ -681,17 +681,17 @@
         <div>
           <p class="eyebrow">Mini Game</p>
           <h2 id="game-title">Typing Debate</h2>
-          <p>表示された日本語の論理的な文章をすばやく入力してスコアを伸ばすゲームです。30秒でどこまで正確に打てるか挑戦できます。</p>
+          <p>表示された日本語の論理的な文章をすばやく入力してスコアを伸ばすゲームです。2分で何文字入力できるか挑戦できます。</p>
         </div>
 
         <div class="game-stats" aria-live="polite">
           <div class="stat">
-            <span class="stat-label">Score</span>
+            <span class="stat-label">Characters</span>
             <span class="stat-value" id="score">0</span>
           </div>
           <div class="stat">
             <span class="stat-label">Time</span>
-            <span class="stat-value" id="time">30</span>
+            <span class="stat-value" id="time">120</span>
           </div>
         </div>
 
@@ -739,7 +739,7 @@
     ];
 
     let score = 0;
-    let timeLeft = 30;
+    let timeLeft = 120;
     let currentPrompt = "";
     let gameTimer = null;
     let wordTimer = null;
@@ -762,9 +762,9 @@
     }
 
     function markCorrect() {
-      score += 1;
+      score += normalizeText(currentPrompt).length;
       scoreValue.textContent = score;
-      message.textContent = score % 5 === 0 ? "Nice typing!" : "Correct!";
+      message.textContent = `${normalizeText(currentPrompt).length}文字クリア`;
       typingHint.textContent = "その調子";
       wordValue.classList.add("is-correct");
       window.clearTimeout(wordTimer);
@@ -779,7 +779,7 @@
       playing = false;
       startButton.disabled = false;
       startButton.textContent = "Restart";
-      message.textContent = `終了: ${score}点`;
+      message.textContent = `終了: ${score}文字`;
       typingHint.textContent = "もう一度挑戦できます";
       typingInput.disabled = true;
       wordValue.textContent = "Finish";
@@ -789,7 +789,7 @@
 
     function startGame() {
       score = 0;
-      timeLeft = 30;
+      timeLeft = 120;
       playing = true;
       scoreValue.textContent = score;
       timeValue.textContent = timeLeft;
