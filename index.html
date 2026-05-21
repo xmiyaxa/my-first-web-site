@@ -809,7 +809,7 @@
       scoreValue.textContent = score;
       timeValue.textContent = timeLeft;
       message.textContent = "文章を入力";
-      typingHint.textContent = "入力すると自動で判定されます";
+      typingHint.textContent = "入力後にEnterで判定します";
       startButton.disabled = true;
       typingInput.disabled = false;
 
@@ -827,7 +827,13 @@
     }
 
     startButton.addEventListener("click", startGame);
-    typingInput.addEventListener("input", () => {
+    typingInput.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") {
+        return;
+      }
+
+      event.preventDefault();
+
       if (!playing) {
         return;
       }
@@ -836,6 +842,9 @@
 
       if (typed === normalizeText(currentPrompt)) {
         markCorrect();
+      } else {
+        message.textContent = "もう一度確認";
+        typingHint.textContent = "文章を入力し直してEnter";
       }
     });
   </script>
